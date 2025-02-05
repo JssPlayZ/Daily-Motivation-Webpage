@@ -7,6 +7,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
@@ -15,6 +16,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 h1 {
@@ -50,4 +52,40 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+#themeButton {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode {
+    background-color: #333;
+    color: #f4f4f4;
+}
+
+body.dark-mode .container {
+    background-color: #444;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode input {
+    background-color: #555;
+    color: #fff;
+    border-color: #777;
+}
+
+body.dark-mode button {
+    background-color: #555;
+    color: #fff;
+}
+
+body.dark-mode button:hover {
+    background-color: #777;
 }

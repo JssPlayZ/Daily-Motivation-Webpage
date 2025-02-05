@@ -1,10 +1,27 @@
-function updateGreeting() {
-    const name = document.getElementById('nameInput').value;
-    const greeting = document.getElementById('greeting');
-    if (name) {
-        greeting.textContent = `Hello, ${name}! Here's your quote for the day:`;
+// Dark/Light Mode Toggle
+const themeButton = document.getElementById('themeButton');
+const body = document.body;
+
+// Check localStorage for saved theme preference
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    body.classList.add(savedTheme);
+    updateThemeButtonText();
+}
+
+themeButton.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    updateThemeButtonText();
+    // Save theme preference to localStorage
+    const currentTheme = body.classList.contains('dark-mode') ? 'dark-mode' : '';
+    localStorage.setItem('theme', currentTheme);
+});
+
+function updateThemeButtonText() {
+    if (body.classList.contains('dark-mode')) {
+        themeButton.textContent = '☀️ Light Mode';
     } else {
-        greeting.textContent = "Hello there! Here's your quote for the day:";
+        themeButton.textContent = '🌙 Dark Mode';
     }
 }
 
