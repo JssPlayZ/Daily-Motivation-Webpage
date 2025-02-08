@@ -41,7 +41,7 @@ input {
 button {
     padding: 10px 20px;
     font-size: 1rem;
-    background-color: #007bff;
+    background-color: #9741ff;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -51,7 +51,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #bb86fc;
 }
 
 .theme-toggle {
@@ -61,31 +61,31 @@ button:hover {
 }
 
 #themeButton {
-    background-color: #333;
+    background-color: #1d1d1d;
     color: #fff;
 }
 
 body.dark-mode {
-    background-color: #333;
+    background-color: #121212;
     color: #f4f4f4;
 }
 
 body.dark-mode .container {
-    background-color: #444;
+    background-color: #1d1d1d;
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode input {
-    background-color: #555;
+    background-color: #303030;
     color: #fff;
     border-color: #777;
 }
 
 body.dark-mode button {
-    background-color: #555;
+    background-color: #9741ff;
     color: #fff;
 }
 
 body.dark-mode button:hover {
-    background-color: #777;
+    background-color: #bb86fc;
 }
