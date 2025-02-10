@@ -86,7 +86,11 @@ function getRandomQuote() {
 function fetchNewQuote() {
     const quote = getRandomQuote();
     const quoteElement = document.getElementById('quote');
-    quoteElement.textContent = `"${quote.text}" - ${quote.author}`;
+    quoteElement.style.opacity = 0;
+    setTimeout(() => {
+        quoteElement.textContent = `"${quote.text}" - ${quote.author}`;
+        quoteElement.style.opacity = 1;
+    }, 100);
 }
 
 // Fetch a random quote when the page loads

@@ -24,18 +24,23 @@ h1 {
     margin-bottom: 20px;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 #quote {
     font-style: italic;
     font-size: 1.2rem;
     margin: 20px 0;
-}
-
-input {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 10px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
 }
 
 button {
@@ -48,44 +53,37 @@ button {
     cursor: pointer;
     margin-top: 10px;
     margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
     background-color: #bb86fc;
+    transform: scale(1.05);
 }
 
-.theme-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+body.dark-mode button {
+    background-color: #9741ff;
 }
 
-#themeButton {
-    background-color: #1d1d1d;
-    color: #fff;
+body.dark-mode button:hover {
+    background-color: #bb86fc;
 }
 
 body.dark-mode {
     background-color: #121212;
     color: #f4f4f4;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode .container {
     background-color: #1d1d1d;
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 body.dark-mode input {
     background-color: #303030;
     color: #fff;
     border-color: #777;
-}
-
-body.dark-mode button {
-    background-color: #9741ff;
-    color: #fff;
-}
-
-body.dark-mode button:hover {
-    background-color: #bb86fc;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
