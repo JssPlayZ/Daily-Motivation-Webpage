@@ -158,3 +158,32 @@ body.dark-mode #quoteList li {
     color: #fff;
     box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #1d1d1d;
+    color: #f4f4f4;
+    margin-top: 30px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer a {
+    color: #bb86fc;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+body.dark-mode footer {
+    background-color: #121212;
+    color: #f4f4f4;
+}
+
+body.dark-mode footer a {
+    color: #9741ff;
+}
