@@ -87,3 +87,74 @@ body.dark-mode input {
     border-color: #777;
     transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
+
+.user-quotes {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+}
+
+.user-quotes h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+#quoteForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#quoteForm input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#quoteForm button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #9741ff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#quoteForm button:hover {
+    background-color: #bb86fc;
+}
+
+#submittedQuotes {
+    margin-top: 20px;
+}
+
+#submittedQuotes h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+#quoteList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#quoteList li {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .user-quotes {
+    border-top-color: #444;
+}
+
+body.dark-mode #quoteList li {
+    background-color: #303030;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}

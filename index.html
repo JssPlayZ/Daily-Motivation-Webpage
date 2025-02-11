@@ -17,6 +17,19 @@
         <input type="text" id="nameInput" placeholder="Enter your name">
         <button onclick="updateGreeting()">Get Motivated!</button>
         <button onclick="fetchNewQuote()">Get a New Quote</button>
+
+        <div class="user-quotes">
+            <h2>Share Your Motivation</h2>
+            <form id="quoteForm">
+                <input type="text" id="userQuote" placeholder="Enter your quote" required>
+                <input type="text" id="userAuthor" placeholder="Your name (optional)">
+                <button type="submit">Submit Quote</button>
+            </form>
+            <div id="submittedQuotes">
+                <h3>Submitted Quotes</h3>
+                <ul id="quoteList"></ul>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

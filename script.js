@@ -95,3 +95,43 @@ function fetchNewQuote() {
 
 // Fetch a random quote when the page loads
 window.onload = fetchNewQuote;
+
+function loadSubmittedQuotes() {
+    const quotes = JSON.parse(localStorage.getItem('userQuotes')) || [];
+    const quoteList = document.getElementById('quoteList');
+    quoteList.innerHTML = ''; 
+    quotes.forEach((quote, index) => {
+        const li = document.createElement('li');
+        li.textContent = `"${quote.text}" - ${quote.author || 'Anonymous'}`;
+        quoteList.appendChild(li);
+    });
+}
+
+document.getElementById('quoteForm').addEventListener('submit', (e) => {
+    e.preventDefault(); 
+    const userQuote = document.getElementById('userQuote').value;
+    const userAuthor = document.getElementById('userAuthor').value;
+
+    if (userQuote) {
+        const newQuote = {
+            text: userQuote,
+            author: userAuthor || 'Anonymous'
+        };
+
+        // Save the quote to localStorage
+        const quotes = JSON.parse(localStorage.getItem('userQuotes')) || [];
+        quotes.push(newQuote);
+        localStorage.setItem('userQuotes', JSON.stringify(quotes));
+
+        loadSubmittedQuotes();
+
+        document.getElementById('userQuote').value = '';
+        document.getElementById('userAuthor').value = '';
+    }
+});
+
+// Load submitted quotes when the page loads
+window.onload = () => {
+    fetchNewQuote();
+    loadSubmittedQuotes();
+};
