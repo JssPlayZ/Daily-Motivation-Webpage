@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Motivation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="theme-toggle">
+            <button id="themeButton">🌙 Dark Mode</button>
+        </div>
+        <h1>Welcome to Your Daily Motivation!</h1>
+        <p id="greeting">Hello there! Here's your quote for the day:</p>
+        <p id="quote">"The only limit to our realization of tomorrow is our doubts of today."</p>
+        <input type="text" id="nameInput" placeholder="Enter your name">
+        <button onclick="updateGreeting()">Get Motivated!</button>
+        <button onclick="fetchNewQuote()">Get a New Quote</button>
+        <button onclick="login()">Log In</button>
+        <button onclick="fetchProtectedData()">View Profile</button>
+        <h2>Signup</h2>
+<input type="text" id="signup-username" placeholder="Enter Username">
+<input type="email" id="signup-email" placeholder="Enter Email">
+<input type="password" id="signup-password" placeholder="Enter Password">
+<button onclick="signup()">Sign Up</button>
+
+<h2>Login</h2>
+<input type="text" id="login-email" placeholder="Enter Username">
+<input type="password" id="login-password" placeholder="Enter Password">
+<button onclick="login()">Log In</button>
+
+
+        <div class="user-quotes">
+            <h2>Share Your Motivation</h2>
+            <form id="quoteForm">
+                <input type="text" id="userQuote" placeholder="Enter your quote" required>
+                <input type="text" id="userAuthor" placeholder="Your name (optional)">
+                <button type="submit">Submit Quote</button>
+            </form>
+            <div id="submittedQuotes">
+                <h3>Submitted Quotes</h3>
+                <ul id="quoteList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created with ❤️ by <a href="https://github.com/jssplayz" target="_blank">JssPlayZ</a></p>
+        <p>&copy; 2025 Daily Motivation. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
