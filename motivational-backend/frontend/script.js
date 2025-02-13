@@ -1,194 +1,154 @@
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded and parsed");
-});
+function toggleTheme() {
+    document.body.classList.toggle("light-mode");
+}
 
-function updateGreeting() {
-    const name = document.getElementById('nameInput').value;
-    const greeting = document.getElementById('greeting');
-    if (name) {
-        greeting.textContent = `Hello, ${name}! Here's your quote for the day:`;
-    } else {
-        greeting.textContent = "Hello there! Here's your quote for the day:";
+function getMotivation() {
+    alert("Stay positive and keep pushing forward!");
+}
+
+function newQuote() {
+    document.getElementById("quote").innerText = "The best way to predict the future is to create it. - Peter Drucker";
+}
+
+async function submitQuote() {
+    const text = document.getElementById("quote-text").value;
+    const author = document.getElementById("quote-author").value;
+    const token = localStorage.getItem("token");
+
+    console.log("Stored Token Before Fetch:", token); // ✅ Debugging
+
+    if (!token) {
+        alert("You must be logged in to submit a quote!");
+        window.location.href = "login.html";
+        return;
     }
-}
 
-// Dark/Light Mode Toggle
-const themeButton = document.getElementById('themeButton');
-const body = document.body;
-
-// Check localStorage for saved theme preference
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) {
-    body.classList.add(savedTheme);
-    updateThemeButtonText();
-}
-
-themeButton.addEventListener('click', () => {
-    body.classList.toggle('dark-mode');
-    updateThemeButtonText();
-    // Save theme preference to localStorage
-    const currentTheme = body.classList.contains('dark-mode') ? 'dark-mode' : '';
-    localStorage.setItem('theme', currentTheme);
-});
-
-function updateThemeButtonText() {
-    if (body.classList.contains('dark-mode')) {
-        themeButton.textContent = '☀️ Light Mode';
-    } else {
-        themeButton.textContent = '🌙 Dark Mode';
-    }
-}
-
-const quotes = [
-    {
-        text: "The only limit to our realization of tomorrow is our doubts of today.",
-        author: "Franklin D. Roosevelt"
-    },
-    {
-        text: "Do what you can, with what you have, where you are.",
-        author: "Theodore Roosevelt"
-    },
-    {
-        text: "Believe you can and you're halfway there.",
-        author: "Theodore Roosevelt"
-    },
-    {
-        text: "It always seems impossible until it's done.",
-        author: "Nelson Mandela"
-    },
-    {
-        text: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-        author: "Winston Churchill"
-    },
-    {
-        text: "The best time to plant a tree was 20 years ago. The second best time is now.",
-        author: "Chinese Proverb"
-    },
-    {
-        text: "You are never too old to set another goal or to dream a new dream.",
-        author: "C.S. Lewis"
-    },
-    {
-        text: "The future belongs to those who believe in the beauty of their dreams.",
-        author: "Eleanor Roosevelt"
-    },
-    {
-        text: "Strive not to be a success, but rather to be of value.",
-        author: "Albert Einstein"
-    },
-    {
-        text: "Your time is limited, don't waste it living someone else's life.",
-        author: "Steve Jobs"
-    }
-];
-
-function getRandomQuote() {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    return quotes[randomIndex];
-}
-
-function fetchNewQuote() {
-    const quote = getRandomQuote();
-    const quoteElement = document.getElementById('quote');
-    quoteElement.style.opacity = 0;
-    setTimeout(() => {
-        quoteElement.textContent = `"${quote.text}" - ${quote.author}`;
-        quoteElement.style.opacity = 1;
-    }, 100);
-}
-
-// Fetch a random quote when the page loads
-window.onload = fetchNewQuote;
-
-function loadSubmittedQuotes() {
-    const quotes = JSON.parse(localStorage.getItem('userQuotes')) || [];
-    const quoteList = document.getElementById('quoteList');
-    quoteList.innerHTML = ''; 
-    quotes.forEach((quote, index) => {
-        const li = document.createElement('li');
-        li.textContent = `"${quote.text}" - ${quote.author || 'Anonymous'}`;
-        quoteList.appendChild(li);
+    const response = await fetch("http://localhost:5000/api/submit-quote", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // ✅ Make sure it's "Bearer <token>"
+        },
+        body: JSON.stringify({ text, author })
     });
+
+    const data = await response.json();
+    console.log("Quote Submission Response:", data);
+
+    if (!response.ok) {
+        alert(`Error submitting quote: ${data.error || "Unknown error"}`);
+    } else {
+        alert("Quote submitted successfully!");
+    }
 }
 
-document.getElementById('quoteForm').addEventListener('submit', (e) => {
-    e.preventDefault(); 
-    const userQuote = document.getElementById('userQuote').value;
-    const userAuthor = document.getElementById('userAuthor').value;
-
-    if (userQuote) {
-        const newQuote = {
-            text: userQuote,
-            author: userAuthor || 'Anonymous'
-        };
-
-        // Save the quote to localStorage
-        const quotes = JSON.parse(localStorage.getItem('userQuotes')) || [];
-        quotes.push(newQuote);
-        localStorage.setItem('userQuotes', JSON.stringify(quotes));
-
-        loadSubmittedQuotes();
-
-        document.getElementById('userQuote').value = '';
-        document.getElementById('userAuthor').value = '';
-    }
-});
-
-// Load submitted quotes when the page loads
-window.onload = () => {
-    fetchNewQuote();
-    loadSubmittedQuotes();
-};
 
 async function signup() {
     const username = document.getElementById("signup-username").value;
-    const email = document.getElementById("signup-email").value;
     const password = document.getElementById("signup-password").value;
-
-    const response = await fetch("http://localhost:5000/signup", {
+    const response = await fetch("/signup", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, email, password })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
     });
-
     const data = await response.json();
     alert(data.message);
 }
 
 async function login() {
-    const email = document.getElementById("login-email").value;
+    const username = document.getElementById("login-username").value;
     const password = document.getElementById("login-password").value;
+
+    console.log("Logging in with:", username, password); // Debugging
 
     const response = await fetch("http://localhost:5000/login", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
     });
 
-    const data = await response.json();
+    if (!response.ok) {
+        console.error("Server Error:", response.status);
+        alert("Login failed: Server error");
+        return;
+    }
 
-    if (response.ok) {
+    const data = await response.json();
+    console.log("Login Response:", data);
+
+    if (data.token) {
+        localStorage.setItem("token", data.token);
         alert("Login successful!");
-        localStorage.setItem("token", data.token); // Store JWT Token
+        window.location.href = "index.html";
     } else {
-        alert(data.error);
+        alert("Login failed: " + (data.error || data.message));
     }
 }
 
-async function fetchProtectedData() {
-    const token = localStorage.getItem("token"); // Get token from localStorage
 
-    const response = await fetch("http://localhost:5000/protected", {
+function logout() {
+    localStorage.removeItem("token"); // Remove token from storage
+    alert("Logged out successfully!");
+    window.location.href = "login.html"; // Redirect to login page
+}
+
+async function getUserProfile() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        alert("You must be logged in to view this page!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const response = await fetch("http://localhost:5000/api/profile", { // ✅ Fixed URL
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}` // Send token in header
-        }
+        headers: { "Authorization": token }
+    });
+
+    if (!response.ok) {
+        console.error("Server Error:", response.status);
+        alert("Failed to fetch user profile.");
+        return;
+    }
+
+    const data = await response.json();
+    console.log("User Profile:", data);
+
+    if (data.user) {
+        document.getElementById("user-info").innerText = `Welcome, ${data.user.username}!`;
+    } else {
+        alert("Session expired, please login again.");
+        logout();
+    }
+}
+
+async function fetchMyQuotes() {
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    const response = await fetch("http://localhost:5000/api/my-quotes", {
+        method: "GET",
+        headers: { "Authorization": token }
     });
 
     const data = await response.json();
-    console.log(data);
+    console.log("User Quotes Response:", data); // ✅ Debugging
+
+    if (!data.quotes || !Array.isArray(data.quotes)) {
+        console.error("Quotes data is invalid:", data);
+        return;
+    }
+
+    const quotesContainer = document.getElementById("submitted-quotes");
+    quotesContainer.innerHTML = "";
+
+    data.quotes.forEach(q => {
+        const quoteElement = document.createElement("div");
+        quoteElement.innerText = `"${q.text}" - ${q.author}`;
+        quotesContainer.appendChild(quoteElement);
+    });
 }
+
+fetchMyQuotes();

@@ -1,91 +1,122 @@
 require("dotenv").config();
 const express = require("express");
-const mysql = require("mysql2");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const path = require("path");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const db = require("./database"); // ✅ Fix: Import database connection
+const authenticateToken = require("./middleware"); // ✅ Fix: Import middleware
+
 const app = express();
-
-app.use(express.static(path.join(__dirname, "../frontend")));
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/index.html"));
-});
-
+app.use(express.json());
 app.use(cors());
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "jsss",
-  database: "MotivationalQuotes"
-});
-
-db.connect(err => {
-  if (err) {
-    console.error("Database connection failed:", err);
-  } else {
-    console.log("Connected to MySQL database.");
-  }
-});
-
-// JWT Secret Key
-const SECRET_KEY = process.env.SECRET_KEY || "fallback_secret";
-
-// ✅ User Signup (Register)
+// ✅ Signup Route
 app.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
-  // Check if user already exists
-  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, result) => {
-    if (err) return res.status(500).json({ error: "Database error" });
-    if (result.length > 0) return res.status(400).json({ error: "Email already in use" });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Insert user into the database
-    db.query("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)", 
-    [username, email, hashedPassword], (err, result) => {
-      if (err) return res.status(500).json({ error: "Registration failed" });
-      res.status(201).json({ message: "User registered successfully!" });
+    db.query("INSERT INTO users (username, password) VALUES (?, ?)", [username, hashedPassword], (err, result) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+        res.json({ message: "Signup successful!" });
     });
-  });
 });
 
-// ✅ User Login
-app.post("/login", (req, res) => {
-  const { email, password } = req.body;
+// ✅ Login Route
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    console.log("Login Attempt:", username, password); // Debugging log
 
-  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, result) => {
-    if (err) return res.status(500).json({ error: "Database error" });
-    if (result.length === 0) return res.status(400).json({ error: "User not found" });
+    db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
+        if (err) {
+            console.error("Database Error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (results.length === 0) {
+            console.log("User not found");
+            return res.status(401).json({ error: "User not found" });
+        }
 
-    const user = result[0];
+        const user = results[0];
+        console.log("Retrieved User:", user); // Debugging log
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) return res.status(400).json({ error: "Invalid password" });
+        // ✅ Fix: Use `password_hash` instead of `password`
+        if (!user.password_hash) {
+            console.error("User record does not contain a password_hash field");
+            return res.status(500).json({ error: "Password field is missing in database" });
+        }
 
-    // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-    res.status(200).json({ message: "Login successful!", token });
-  });
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        console.log("Password Match:", isMatch); // ✅ Debugging log
+
+        if (!isMatch) {
+            return res.status(401).json({ error: "Invalid password" });
+        }
+
+        const token = jwt.sign({ id: user.id, username: user.username }, process.env.SECRET_KEY, { expiresIn: "1h" });
+        res.json({ token });
+    });
 });
 
-// ✅ Protected Route (Example)
-app.get("/protected", (req, res) => {
-  const token = req.headers["authorization"];
-  if (!token) return res.status(401).json({ error: "Access denied" });
+app.get("/api/profile", (req, res) => {
+    const token = req.headers["authorization"];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err) return res.status(401).json({ error: "Invalid token" });
-    res.json({ message: "Welcome to the protected route!", userId: decoded.userId });
-  });
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(401).json({ error: "Invalid token" });
+
+        res.json({ user: { username: decoded.username } });
+    });
 });
 
-// Start server
+app.get("/api/my-quotes", (req, res) => {
+    const token = req.headers["authorization"];
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(401).json({ error: "Invalid token" });
+
+        console.log("Fetching quotes for:", decoded.username); // ✅ Debugging
+
+        const query = `
+            SELECT text, author 
+            FROM user_submissions 
+            WHERE user_id = (SELECT id FROM users WHERE username = ?)
+        `;
+
+        db.query(query, [decoded.username], (err, results) => {
+            if (err) {
+                console.error("Database Error:", err.sqlMessage); // ✅ Log full SQL error
+                return res.status(500).json({ error: "Database error", details: err.sqlMessage });
+            }
+            console.log("Quotes Retrieved:", results); // ✅ Debugging
+            res.json({ quotes: results });
+        });
+    });
+});
+
+app.post("/api/submit-quote", authenticateToken, (req, res) => {
+    console.log("User submitting quote:", req.user);
+    const user_id = req.user.id; // ERROR LINE
+    const { text, author } = req.body;
+    
+    if (!text || !author) {
+        return res.status(400).json({ error: "Missing quote text or author" });
+    }
+
+    db.query(
+        "INSERT INTO user_submissions (user_id, text, author) VALUES (?, ?, ?)",
+        [user_id, text, author],
+        (err, result) => {
+            if (err) {
+                console.error("Database Error:", err);
+                return res.status(500).json({ error: "Database error" });
+            }
+            res.json({ message: "Quote submitted successfully" });
+        }
+    );
+});
+
+// ✅ Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

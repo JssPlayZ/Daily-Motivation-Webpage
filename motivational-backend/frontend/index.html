@@ -8,48 +8,30 @@
 </head>
 <body>
     <div class="container">
-        <div class="theme-toggle">
-            <button id="themeButton">🌙 Dark Mode</button>
-        </div>
+        <button onclick="toggleTheme()">🌙 Light Mode</button>
         <h1>Welcome to Your Daily Motivation!</h1>
-        <p id="greeting">Hello there! Here's your quote for the day:</p>
-        <p id="quote">"The only limit to our realization of tomorrow is our doubts of today."</p>
-        <input type="text" id="nameInput" placeholder="Enter your name">
-        <button onclick="updateGreeting()">Get Motivated!</button>
-        <button onclick="fetchNewQuote()">Get a New Quote</button>
-        <button onclick="login()">Log In</button>
-        <button onclick="fetchProtectedData()">View Profile</button>
-        <h2>Signup</h2>
-<input type="text" id="signup-username" placeholder="Enter Username">
-<input type="email" id="signup-email" placeholder="Enter Email">
-<input type="password" id="signup-password" placeholder="Enter Password">
-<button onclick="signup()">Sign Up</button>
-
-<h2>Login</h2>
-<input type="text" id="login-email" placeholder="Enter Username">
-<input type="password" id="login-password" placeholder="Enter Password">
-<button onclick="login()">Log In</button>
-
-
-        <div class="user-quotes">
-            <h2>Share Your Motivation</h2>
-            <form id="quoteForm">
-                <input type="text" id="userQuote" placeholder="Enter your quote" required>
-                <input type="text" id="userAuthor" placeholder="Your name (optional)">
-                <button type="submit">Submit Quote</button>
-            </form>
-            <div id="submittedQuotes">
-                <h3>Submitted Quotes</h3>
-                <ul id="quoteList"></ul>
-            </div>
+        <p>Hello there! Here's your quote for the day:</p>
+        <blockquote id="quote">"Believe you can and you're halfway there." - Theodore Roosevelt</blockquote>
+        <button onclick="getMotivation()">Get Motivated!</button>
+        <button onclick="newQuote()">Get a New Quote</button>
+        <hr>
+        <h2>Share Your Motivation</h2>
+        <input type="text" id="quote-text" placeholder="Enter your quote">
+        <input type="text" id="quote-author" placeholder="Your name (optional)">
+        <button onclick="submitQuote()">Submit Quote</button>
+        <button onclick="logout()">Logout</button>
+        <h2 id="user-info"></h2>
+        <hr>
+        <div class="auth-buttons">
+            <a href="login.html"><button>Login</button></a>
+            <a href="signup.html"><button>Sign Up</button></a>
         </div>
+        <h2>Submitted Quotes</h2>
+        <div id="submitted-quotes"></div>
     </div>
-
-    <footer>
-        <p>Created with ❤️ by <a href="https://github.com/jssplayz" target="_blank">JssPlayZ</a></p>
-        <p>&copy; 2025 Daily Motivation. All rights reserved.</p>
-    </footer>
-
     <script src="script.js"></script>
+    <script>
+        getUserProfile();
+    </script>
 </body>
 </html>
