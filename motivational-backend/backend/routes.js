@@ -6,7 +6,6 @@ const authenticate = require("./middleware");
 
 const router = express.Router();
 
-// 🟢 Signup Route
 router.post("/signup", async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,7 +16,6 @@ router.post("/signup", async (req, res) => {
     });
 });
 
-// 🟢 Login Route
 router.post("/login", (req, res) => {
     const { username, password } = req.body;
 
@@ -33,7 +31,6 @@ router.post("/login", (req, res) => {
     });
 });
 
-// 🔒 Protected Route (View Profile)
 router.get("/profile", authenticate, (req, res) => {
     res.json({ user: req.user });
 });

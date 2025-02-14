@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
-    console.log("Received Authorization Header:", authHeader); // ✅ Debugging
+    console.log("Received Authorization Header:", authHeader);
 
     const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
@@ -17,7 +17,7 @@ function authenticateToken(req, res, next) {
             return res.status(403).json({ error: "Invalid token" });
         }
 
-        console.log("Decoded JWT User:", user); // ✅ Debugging
+        console.log("Decoded JWT User:", user);
         req.user = user;
         next();
     });

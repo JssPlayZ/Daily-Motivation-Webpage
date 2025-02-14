@@ -1,8 +1,6 @@
-// Dark/Light Mode Toggle
 const themeButton = document.getElementById('themeToggle');
 const body = document.body;
 
-// Check localStorage for saved theme preference
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {
     body.classList.add(savedTheme);
@@ -12,7 +10,6 @@ if (savedTheme) {
 themeButton.addEventListener('click', () => {
     body.classList.toggle('dark-mode');
     updateThemeButtonText();
-    // Save theme preference to localStorage
     const currentTheme = body.classList.contains('dark-mode') ? 'dark-mode' : '';
     localStorage.setItem('theme', currentTheme);
 });
@@ -29,16 +26,26 @@ function getMotivation() {
     alert("Stay positive and keep pushing forward!");
 }
 
-function newQuote() {
-    document.getElementById("quote").innerText = "The best way to predict the future is to create it. - Peter Drucker";
+async function newQuote() {
+    try {
+        const response = await fetch("http://localhost:5000/random-quote");
+        if (!response.ok) throw new Error("Failed to fetch quote");
+
+        const data = await response.json();
+        document.getElementById("quote").innerText = `"${data.text}" - ${data.author}`;
+    } catch (error) {
+        console.error("Error fetching new quote:", error);
+        document.getElementById("quote").innerText = "Failed to load a new quote.";
+    }
 }
 
+
 async function submitQuote() {
-    const text = document.getElementById("quote-text").value;
-    const author = document.getElementById("quote-author").value;
+    const text = document.getElementById("quote-text").value.trim();
+    const author = document.getElementById("quote-author").value.trim();
     const token = localStorage.getItem("token");
 
-    console.log("Stored Token Before Fetch:", token); // ✅ Debugging
+    console.log("Stored Token Before Fetch:", token);
 
     if (!token) {
         alert("You must be logged in to submit a quote!");
@@ -46,22 +53,35 @@ async function submitQuote() {
         return;
     }
 
-    const response = await fetch("http://localhost:5000/api/submit-quote", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // ✅ Make sure it's "Bearer <token>"
-        },
-        body: JSON.stringify({ text, author })
-    });
+    if (!text || !author) {
+        alert("Please enter both the quote text and the author's name.");
+        return;
+    }
 
-    const data = await response.json();
-    console.log("Quote Submission Response:", data);
+    try {
+        const response = await fetch("http://localhost:5000/api/submit-quote", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ text, author })
+        });
 
-    if (!response.ok) {
-        alert(`Error submitting quote: ${data.error || "Unknown error"}`);
-    } else {
-        alert("Quote submitted successfully!");
+        const data = await response.json();
+        console.log("Quote Submission Response:", data);
+
+        if (!response.ok) {
+            alert(`Error submitting quote: ${data.error || "Unknown error"}`);
+        } else {
+            alert("Quote submitted successfully!");
+            
+            document.getElementById("quote-text").value = "";
+            document.getElementById("quote-author").value = "";
+        }
+    } catch (error) {
+        console.error("Error submitting quote:", error);
+        alert("Failed to submit quote. Please try again later.");
     }
 }
 
@@ -85,7 +105,6 @@ async function signup() {
         const data = await response.json();
         alert(data.message || "Signup successful! Redirecting...");
 
-        // ✅ Redirect to login page after successful signup
         window.location.href = "login.html";
 
     } catch (error) {
@@ -98,7 +117,7 @@ async function login() {
     const username = document.getElementById("login-username").value;
     const password = document.getElementById("login-password").value;
 
-    console.log("Logging in with:", username, password); // Debugging
+    console.log("Logging in with:", username, password); 
 
     const response = await fetch("http://localhost:5000/login", {
         method: "POST",
@@ -126,9 +145,9 @@ async function login() {
 
 
 function logout() {
-    localStorage.removeItem("token"); // Remove token from storage
+    localStorage.removeItem("token"); 
     alert("Logged out successfully!");
-    window.location.href = "login.html"; // Redirect to login page
+    window.location.href = "login.html"; 
 }
 
 async function getUserProfile() {
@@ -140,7 +159,7 @@ async function getUserProfile() {
         return;
     }
 
-    const response = await fetch("http://localhost:5000/api/profile", { // ✅ Fixed URL
+    const response = await fetch("http://localhost:5000/api/profile", {
         method: "GET",
         headers: { "Authorization": token }
     });
@@ -173,7 +192,7 @@ async function fetchMyQuotes() {
     });
 
     const data = await response.json();
-    console.log("User Quotes Response:", data); // ✅ Debugging
+    console.log("User Quotes Response:", data); 
 
     if (!data.quotes || !Array.isArray(data.quotes)) {
         console.error("Quotes data is invalid:", data);
@@ -194,12 +213,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitButton = document.getElementById("submitQuote");
     const quoteText = document.getElementById("quoteText");
     const quoteAuthor = document.getElementById("quoteAuthor");
-    const quotesContainer = document.getElementById("quotesList"); // Container for quotes
+    const quotesContainer = document.getElementById("quotesList"); 
 
-    // Fetch stored token from local storage
     const token = localStorage.getItem("token");
 
-    // Function to submit a quote
     submitButton.addEventListener("click", async () => {
         const text = quoteText.value.trim();
         const author = quoteAuthor.value.trim();
@@ -222,9 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             if (response.ok) {
                 alert("✅ Quote submitted successfully!");
-                quoteText.value = ""; // Clear input field
-                quoteAuthor.value = ""; // Clear input field
-                fetchQuotes(); // Refresh quotes instantly
+                quoteText.value = ""; 
+                quoteAuthor.value = ""; 
+                fetchQuotes();
             } else {
                 alert(`❌ Error submitting quote: ${data.error}`);
             }
@@ -234,30 +251,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Function to fetch and display quotes
     async function fetchQuotes() {
         try {
-            const response = await fetch("http://localhost:5000/api/my-quotes", {
-                headers: { "Authorization": token }
+            const response = await fetch('/quotes');
+            const quotes = await response.json();
+    
+            const quoteList = document.getElementById('quoteList');
+            quoteList.innerHTML = '';
+    
+            quotes.forEach(quote => {
+                const li = document.createElement('li');
+                li.innerHTML = `"${quote.text}" - <strong>${quote.author}</strong>`;
+                quoteList.appendChild(li);
             });
-
-            const data = await response.json();
-            if (response.ok) {
-                quotesContainer.innerHTML = ""; // Clear existing quotes
-                data.quotes.forEach((quote) => {
-                    const quoteElement = document.createElement("p");
-                    quoteElement.textContent = `"${quote.text}" - ${quote.author}`;
-                    quotesContainer.appendChild(quoteElement);
-                });
-            } else {
-                console.error("Error fetching quotes:", data.error);
-            }
         } catch (error) {
-            console.error("Fetch Quotes Error:", error);
+            console.error('Error fetching quotes:', error);
         }
     }
 
-    fetchQuotes(); // Load quotes on page load
+    fetchQuotes();
 });
 
 fetchMyQuotes();
