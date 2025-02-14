@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <button onclick="toggleTheme()">🌙 Light Mode</button>
+        <button id="themeToggle">🌙 Light Mode</button>
         <h1>Welcome to Your Daily Motivation!</h1>
         <p>Hello there! Here's your quote for the day:</p>
         <blockquote id="quote">"Believe you can and you're halfway there." - Theodore Roosevelt</blockquote>
@@ -16,19 +16,21 @@
         <button onclick="newQuote()">Get a New Quote</button>
         <hr>
         <h2>Share Your Motivation</h2>
-        <input type="text" id="quote-text" placeholder="Enter your quote">
-        <input type="text" id="quote-author" placeholder="Your name (optional)">
+        <input type="text" id="quote-text" placeholder="Enter quote" required>
+        <input type="text" id="quote-author" placeholder="Enter author name" required>
         <button onclick="submitQuote()">Submit Quote</button>
         <button onclick="logout()">Logout</button>
         <h2 id="user-info"></h2>
         <hr>
-        <div class="auth-buttons">
-            <a href="login.html"><button>Login</button></a>
-            <a href="signup.html"><button>Sign Up</button></a>
-        </div>
         <h2>Submitted Quotes</h2>
         <div id="submitted-quotes"></div>
     </div>
+
+    <footer>
+        <p>Created with ❤️ by <a href="https://github.com/jssplayz" target="_blank">JssPlayZ</a></p>
+        <p>&copy; 2025 Daily Motivation. All rights reserved.</p>
+    </footer>
+
     <script src="script.js"></script>
     <script>
         getUserProfile();

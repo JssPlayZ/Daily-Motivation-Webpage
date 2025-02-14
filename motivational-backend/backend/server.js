@@ -12,14 +12,31 @@ app.use(cors());
 
 // ✅ Signup Route
 app.post("/signup", async (req, res) => {
-    const { username, password } = req.body;
+    console.log("Received Signup Request:", req.body); // ✅ Debugging
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { username, email, password } = req.body; // ✅ Include email
 
-    db.query("INSERT INTO users (username, password) VALUES (?, ?)", [username, hashedPassword], (err, result) => {
-        if (err) return res.status(500).json({ error: "Database error" });
-        res.json({ message: "Signup successful!" });
-    });
+    if (!username || !email || !password) { // ✅ Validate email too
+        return res.status(400).json({ error: "Missing username, email, or password" });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        db.query(
+            "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)", 
+            [username, email, hashedPassword],  // ✅ Insert email into DB
+            (err, result) => {
+                if (err) {
+                    console.error("Database Insert Error:", err.sqlMessage);
+                    return res.status(500).json({ error: "Database error", details: err.sqlMessage });
+                }
+                res.json({ message: "Signup successful!" });
+            }
+        );
+    } catch (error) {
+        console.error("Unexpected Signup Error:", error);
+        res.status(500).json({ error: "Unexpected server error" });
+    }
 });
 
 // ✅ Login Route
