@@ -32,7 +32,11 @@ async function newQuote() {
         if (!response.ok) throw new Error("Failed to fetch quote");
 
         const data = await response.json();
-        document.getElementById("quote").innerText = `"${data.text}" - ${data.author}`;
+        const quoteElement = document.getElementById("quote");
+        quoteElement.style.animation = "none"; 
+        void quoteElement.offsetWidth;
+        quoteElement.style.animation = "fadeIn 0.5s ease-in-out forwards";
+        quoteElement.innerText = `"${data.text}" - ${data.author}`;
     } catch (error) {
         console.error("Error fetching new quote:", error);
         document.getElementById("quote").innerText = "Failed to load a new quote.";
